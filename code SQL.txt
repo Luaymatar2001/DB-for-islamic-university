@@ -1,0 +1,3600 @@
+-- drop objects
+drop table building_info cascade constraints;
+drop sequence building_info_seq;
+drop table room_info cascade constraints;
+drop sequence room_info_seq;
+drop table job_info cascade constraints;
+drop sequence job_info_seq;
+drop table faculty_info cascade constraints;
+drop sequence faculty_info_seq;
+drop table department_info cascade constraints;
+drop sequence department_info_seq;
+drop table employee_info cascade constraints;
+drop sequence employee_info_seq;
+drop table city cascade constraints;
+drop sequence city_seq;
+drop table sitting_number cascade constraints;
+drop sequence sitting_number_seq;
+drop table student_info cascade constraints;
+drop sequence student_info_seq;
+drop table desires cascade constraints;
+drop sequence desires_seq;
+drop table semester_info cascade constraints;
+drop sequence semester_info_seq;
+drop table payments_info cascade constraints;
+drop sequence payments_info_seq;
+drop table payments_details cascade constraints;
+drop sequence payments_details_seq;
+drop table student_semester_registeration cascade constraints;
+drop sequence student_semester_registeration_seq;
+drop table course_info cascade constraints;
+drop sequence course_info_seq;
+drop table plan_info cascade constraints;
+drop sequence plan_info_seq;
+drop table plan_levels_info cascade constraints;
+drop sequence plan_levels_info_seq;
+drop table level_courses_info cascade constraints;
+drop sequence level_courses_info_seq;
+drop table registered_courses_info cascade constraints;
+drop sequence registered_courses_info_seq;
+drop table semester_courses_info cascade constraints;
+drop sequence semester_courses_info_seq;
+drop table teacher_section_info cascade constraints;
+drop sequence teacher_section_info_seq;
+drop table appointments_info cascade constraints;
+drop sequence appointments_info_seq;
+drop package building_info_api;
+drop package room_info_api;
+drop package job_info_api;
+drop package faculty_info_api;
+drop package department_info_api;
+drop package employee_info_api;
+drop package city_api;
+drop package sitting_number_api;
+drop package student_info_api;
+drop package desires_api;
+drop package semester_info_api;
+drop package payments_info_api;
+drop package payments_details_api;
+drop package student_semester_registeration_api;
+drop package course_info_api;
+drop package plan_info_api;
+drop package plan_levels_info_api;
+drop package level_courses_info_api;
+drop package registered_courses_info_api;
+drop package semester_courses_info_api;
+drop package teacher_section_info_api;
+drop package appointments_info_api;
+
+-- create tables
+create sequence building_info_seq;
+
+create table building_info (
+    building_char                  varchar2(1 char) not null constraint building_info_building_char_pk primary key,
+    building_name                  varchar2(64 char)
+                                   constraint building_info_building_nam_unq unique
+)
+;
+
+create sequence room_info_seq;
+
+create table room_info (
+    room_seq                       integer not null constraint room_info_room_seq_pk primary key,
+    room_no                        integer,
+    building_code                  varchar2(1 char)
+                                   constraint room_info_building_code_fk
+                                   references building_info on delete cascade
+)
+;
+
+-- table index
+create index room_info_i1 on room_info (building_code);
+
+create sequence job_info_seq;
+
+create table job_info (
+    job_id                         integer not null constraint job_info_job_id_pk primary key,
+    job_title                      varchar2(64 char)
+                                   constraint job_info_job_title_unq unique,
+    max_salary                     number,
+    min_salary                     number
+)
+;
+
+create sequence faculty_info_seq;
+
+create table faculty_info (
+    faculty_no                     integer not null constraint faculty_info_faculty_no_pk primary key,
+    faculty_name                   varchar2(64 char)
+                                   constraint faculty_info_faculty_name_unq unique,
+    credit_hour_price              integer
+)
+;
+
+create sequence department_info_seq;
+
+create table department_info (
+    department_no                  integer not null constraint department_info_department_pk primary key,
+    department_name                varchar2(64 char)
+                                   constraint department_in_department_n_unq unique,
+    faculty_code                   integer
+                                   constraint department_info_faculty_cod_fk
+                                   references faculty_info on delete cascade
+)
+;
+
+-- table index
+create index department_info_i1 on department_info (faculty_code);
+
+create sequence employee_info_seq;
+
+create table employee_info (
+    employee_id                    integer not null constraint employee_info_employee_id_pk primary key,
+    first_name                     varchar2(32 char) not null,
+    middle_name                    varchar2(32 char) not null,
+    last_name                      varchar2(32 char) not null,
+    arddress                       varchar2(64 char) not null,
+    phone_no                       integer not null,
+    email                          varchar2(64 char)
+                                   constraint employee_info_email_unq unique,
+    salary                         number,
+    ssn                            number
+                                   constraint employee_info_ssn_unq unique,
+    gender                         varchar2(1 char),
+    birth_date                     date,
+    job_code                       integer
+                                   constraint employee_info_job_code_fk
+                                   references job_info on delete cascade,
+    department_code                integer
+                                   constraint employee_info_department_co_fk
+                                   references department_info on delete cascade,
+    room_code                      integer
+                                   constraint employee_info_room_code_fk
+                                   references room_info on delete cascade
+)
+;
+
+-- table index
+create index employee_info_i1 on employee_info (department_code);
+create index employee_info_i422 on employee_info (job_code);
+create index employee_info_i433 on employee_info (room_code);
+
+create sequence city_seq;
+
+create table city (
+    city_no                        integer not null constraint city_city_no_pk primary key,
+    city_name                      varchar2(64 char)
+)
+;
+
+create sequence sitting_number_seq;
+
+create table sitting_number (
+    high_school_sitting_no         integer not null constraint sitting_numbe_high_school_s_pk primary key,
+    ssn                            integer
+                                   constraint sitting_number_ssn_unq unique,
+    gpa                            number,
+    major                          varchar2(2 char)
+)
+;
+
+create sequence student_info_seq;
+
+create table student_info (
+    student_id                     integer not null constraint student_info_student_id_pk primary key,
+    first_name                     varchar2(32 char) not null,
+    middle_name                    varchar2(32 char) not null,
+    last_name                      varchar2(32 char) not null,
+    degree_program                 varchar2(3 char),
+    arddress                       varchar2(64 char) not null,
+    phone_number                   integer not null,
+    email                          varchar2(64 char)
+                                   constraint student_info_email_unq unique,
+    gender                         varchar2(1 char),
+    birth_date                     date,
+    city_code                      integer
+                                   constraint student_info_city_code_fk
+                                   references city on delete cascade,
+    sitting_number_code            integer
+                                   constraint student_info_sitting_number_fk
+                                   references sitting_number on delete cascade
+)
+;
+
+-- table index
+create index student_info_i1 on student_info (city_code);
+create index student_info_i522 on student_info (sitting_number_code);
+
+create sequence desires_seq;
+
+create table desires (
+    desire_seq                     integer not null constraint desires_desire_seq_pk primary key,
+    desire_no                      integer,
+    faculty_code                   integer
+                                   constraint desires_faculty_code_fk
+                                   references faculty_info on delete cascade,
+    student_code                   integer
+                                   constraint desires_student_code_fk
+                                   references student_info on delete cascade
+)
+;
+
+-- table index
+create index desires_i1 on desires (faculty_code);
+create index desires_i572 on desires (student_code);
+
+create sequence semester_info_seq;
+
+create table semester_info (
+    semester_seq                   integer not null constraint semester_info_semester_seq_pk primary key,
+    semester_no                    integer,
+    semester_start_date            date,
+    semester_end_date              date,
+    paid_quit_start_date           date,
+    paid_quit_end_date             date,
+    unpaid_quit_start_date         date,
+    unpaid_quit_end_date           date
+)
+;
+
+create sequence payments_info_seq;
+
+create table payments_info (
+    payments_info_pk               integer not null constraint payments_info_payments_info_pk primary key,
+    payments_name                  varchar2(64 char) not null,
+    default_value                  integer,
+    payments_type                  varchar2(1 char),
+    payments_move                  varchar2(1 char)
+)
+;
+
+create sequence payments_details_seq;
+
+create table payments_details (
+    payments_serial_no             integer not null constraint payments_deta_payments_seri_pk primary key,
+    credit_amount                  number,
+    debit_amount                   number,
+    payment_date                   date,
+    student_code                   integer
+                                   constraint payments_detail_student_cod_fk
+                                   references student_info on delete cascade,
+    semester_code                  integer
+                                   constraint payments_detail_semester_co_fk
+                                   references semester_info on delete cascade,
+    payments_code                  integer
+                                   constraint payments_detail_payments_co_fk
+                                   references payments_info on delete cascade
+)
+;
+
+-- table index
+create index payments_details_i1 on payments_details (payments_code);
+create index payments_details_i652 on payments_details (semester_code);
+create index payments_details_i663 on payments_details (student_code);
+
+create sequence student_semester_registeration_seq;
+
+create table student_semester_registeration (
+    student_semester_reg_seq       integer not null constraint student_semes_student_semes_pk primary key,
+    gpa                            number not null,
+    cgpa                           number not null,
+    status                         varchar2(1 char) not null,
+    student_code                   integer
+                                   constraint student_semeste_student_cod_fk
+                                   references student_info on delete cascade,
+    semester_code                  integer
+                                   constraint student_semeste_semester_co_fk
+                                   references semester_info on delete cascade
+)
+;
+
+-- table index
+create index student_semester_r_i1 on student_semester_registeration (semester_code);
+create index student_semester_r_i712 on student_semester_registeration (student_code);
+
+create sequence course_info_seq;
+
+create table course_info (
+    course_no                      integer not null constraint course_info_course_no_pk primary key,
+    course_name                    varchar2(64 char)
+                                   constraint course_info_course_name_unq unique,
+    course_description             varchar2(256 char),
+    no_of_hours                    integer
+)
+;
+
+create sequence plan_info_seq;
+
+create table plan_info (
+    plan_seq                       integer not null constraint plan_info_plan_seq_pk primary key,
+    plan_no                        integer
+                                   constraint plan_info_plan_no_unq unique,
+    plan_year                      integer,
+    plan_hours                     integer,
+    department_code                integer
+                                   constraint plan_info_department_code_fk
+                                   references department_info on delete cascade
+)
+;
+
+-- table index
+create index plan_info_i1 on plan_info (department_code);
+
+create sequence plan_levels_info_seq;
+
+create table plan_levels_info (
+    plan_level_seq                 integer not null constraint plan_levels_i_plan_level_se_pk primary key,
+    plan_level_no                  integer,
+    plan_level_hours_range         varchar2(8 char),
+    plan_code                      integer
+                                   constraint plan_levels_info_plan_code_fk
+                                   references plan_info on delete cascade
+)
+;
+
+-- table index
+create index plan_levels_info_i1 on plan_levels_info (plan_code);
+
+create sequence level_courses_info_seq;
+
+create table level_courses_info (
+    level_course_seq               integer not null constraint level_courses_level_course_pk primary key,
+    course_code                    integer
+                                   constraint level_courses_i_course_code_fk
+                                   references course_info on delete cascade,
+    plan_level_code                integer
+                                   constraint level_courses_plan_level_co_fk
+                                   references plan_levels_info on delete cascade
+)
+;
+
+-- table index
+create index level_courses_info_i1 on level_courses_info (course_code);
+create index level_courses_info_i852 on level_courses_info (plan_level_code);
+
+create sequence registered_courses_info_seq;
+
+create table registered_courses_info (
+    reg_courses_seq                integer not null constraint registered_co_reg_courses_s_pk primary key,
+    midterm_grade                  integer,
+    final_grade                    integer,
+    student_semester_reg_code      integer
+                                   constraint registered_co_student_semes_fk
+                                   references student_semester_registeration on delete cascade,
+    course_code                    integer
+                                   constraint registered_cour_course_code_fk
+                                   references course_info on delete cascade
+)
+;
+
+-- table index
+create index registered_courses_i1 on registered_courses_info (course_code);
+create index registered_courses_i902 on registered_courses_info (student_semester_reg_code);
+
+create sequence semester_courses_info_seq;
+
+create table semester_courses_info (
+    semester_courses_seq           integer not null constraint semester_cour_semester_cour_pk primary key,
+    semester_code                  integer
+                                   constraint semester_course_semester_co_fk
+                                   references semester_info on delete cascade,
+    course_code                    integer
+                                   constraint semester_course_course_code_fk
+                                   references course_info on delete cascade
+)
+;
+
+-- table index
+create index semester_courses_i_i1 on semester_courses_info (course_code);
+create index semester_courses_i_i952 on semester_courses_info (semester_code);
+
+create sequence teacher_section_info_seq;
+
+create table teacher_section_info (
+    teacher_section_seq            integer not null constraint teacher_secti_teacher_secti_pk primary key,
+    section_no                     integer,
+    employee_code                  integer
+                                   constraint teacher_section_employee_co_fk
+                                   references employee_info on delete cascade,
+    semester_courses_code          integer
+                                   constraint teacher_secti_semester_cour_fk
+                                   references semester_courses_info on delete cascade
+)
+;
+
+-- table index
+create index teacher_section_in_i1 on teacher_section_info (employee_code);
+create index teacher_section_in_i1002 on teacher_section_info (semester_courses_code);
+
+create sequence appointments_info_seq;
+
+create table appointments_info (
+    appointment_seq                integer not null constraint appointments_appointment_s_pk primary key,
+    lecture_time_from              varchar2(8 char),
+    lecture_time_to                varchar2(8 char),
+    dayss                          varchar2(128 char),
+    room_code                      integer
+                                   constraint appointments_info_room_code_fk
+                                   references room_info on delete cascade,
+    teacher_section_code           integer
+                                   constraint appointments_teacher_secti_fk
+                                   references teacher_section_info on delete cascade
+)
+;
+
+-- table index
+create index appointments_info_i1 on appointments_info (room_code);
+create index appointments_info_i1052 on appointments_info (teacher_section_code);
+
+
+-- triggers
+
+-- APIs --
+create or replace editionable package building_info_api
+is
+ 
+    /* example:
+        declare
+            l_building_name                 varchar2(64);
+        begin
+        building_info_api.get_row (
+            p_building_char                 => 1,
+            p_building_name                 => l_building_name
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_building_char                in  varchar2,
+        p_building_name                out varchar2
+    );
+ 
+    /* example:
+        begin
+        building_info_api.insert_row (
+            p_building_char               => null,
+            p_building_name               => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_building_char                in varchar2 default null,
+        p_building_name                in varchar2 default null
+    );
+    procedure update_row  (
+        p_building_char                in varchar2 default null,
+        p_building_name                in varchar2 default null
+    );
+    procedure delete_row (
+        p_building_char                in varchar2
+    );
+end building_info_api;
+/
+
+
+create or replace editionable package  body building_info_api
+is
+ 
+    procedure get_row (
+        p_building_char                in  varchar2,
+        p_building_name                out varchar2
+    )
+    is
+    begin
+        for c1 in (select * from building_info where building_char = p_building_char) loop
+            p_building_name := c1.building_name;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_building_char                in varchar2 default null,
+        p_building_name                in varchar2 default null
+    )
+    is
+    begin
+        insert into building_info (
+            building_char,
+            building_name
+        ) values (
+            p_building_char,
+            p_building_name
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_building_char                in varchar2 default null,
+        p_building_name                in varchar2 default null
+    )
+    is
+    begin
+        update  building_info set 
+            building_char = p_building_char,
+            building_name = p_building_name
+        where building_char = p_building_char;
+    end update_row;
+
+    procedure delete_row (
+        p_building_char                in varchar2
+    )
+    is
+    begin
+        delete from building_info where building_char = p_building_char;
+    end delete_row;
+
+end building_info_api;
+/
+
+
+create or replace editionable package room_info_api
+is
+ 
+    /* example:
+        declare
+            l_room_no                       integer;
+            l_building_code                 varchar2(1);
+        begin
+        room_info_api.get_row (
+            p_room_seq                      => 1,
+            p_room_no                       => l_room_no,
+            p_building_code                 => l_building_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_room_seq                     in  integer,
+        p_room_no                      out integer,
+        p_building_code                out varchar2
+    );
+ 
+    /* example:
+        begin
+        room_info_api.insert_row (
+            p_room_seq                    => null,
+            p_room_no                     => null,
+            p_building_code               => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_room_seq                     in integer default null,
+        p_room_no                      in integer default null,
+        p_building_code                in varchar2 default null
+    );
+    procedure update_row  (
+        p_room_seq                     in integer default null,
+        p_room_no                      in integer default null,
+        p_building_code                in varchar2 default null
+    );
+    procedure delete_row (
+        p_room_seq                     in integer
+    );
+end room_info_api;
+/
+
+
+create or replace editionable package  body room_info_api
+is
+ 
+    procedure get_row (
+        p_room_seq                     in  integer,
+        p_room_no                      out integer,
+        p_building_code                out varchar2
+    )
+    is
+    begin
+        for c1 in (select * from room_info where room_seq = p_room_seq) loop
+            p_room_no := c1.room_no;
+            p_building_code := c1.building_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_room_seq                     in integer default null,
+        p_room_no                      in integer default null,
+        p_building_code                in varchar2 default null
+    )
+    is
+    begin
+        insert into room_info (
+            room_seq,
+            room_no,
+            building_code
+        ) values (
+            p_room_seq,
+            p_room_no,
+            p_building_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_room_seq                     in integer default null,
+        p_room_no                      in integer default null,
+        p_building_code                in varchar2 default null
+    )
+    is
+    begin
+        update  room_info set 
+            room_seq = p_room_seq,
+            room_no = p_room_no,
+            building_code = p_building_code
+        where room_seq = p_room_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_room_seq                     in integer
+    )
+    is
+    begin
+        delete from room_info where room_seq = p_room_seq;
+    end delete_row;
+
+end room_info_api;
+/
+
+
+create or replace editionable package job_info_api
+is
+ 
+    /* example:
+        declare
+            l_job_title                     varchar2(64);
+            l_max_salary                    number;
+            l_min_salary                    number;
+        begin
+        job_info_api.get_row (
+            p_job_id                        => 1,
+            p_job_title                     => l_job_title,
+            p_max_salary                    => l_max_salary,
+            p_min_salary                    => l_min_salary
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_job_id                       in  integer,
+        p_job_title                    out varchar2,
+        p_max_salary                   out number,
+        p_min_salary                   out number
+    );
+ 
+    /* example:
+        begin
+        job_info_api.insert_row (
+            p_job_id                      => null,
+            p_job_title                   => null,
+            p_max_salary                  => null,
+            p_min_salary                  => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_job_id                       in integer default null,
+        p_job_title                    in varchar2 default null,
+        p_max_salary                   in number default null,
+        p_min_salary                   in number default null
+    );
+    procedure update_row  (
+        p_job_id                       in integer default null,
+        p_job_title                    in varchar2 default null,
+        p_max_salary                   in number default null,
+        p_min_salary                   in number default null
+    );
+    procedure delete_row (
+        p_job_id                       in integer
+    );
+end job_info_api;
+/
+
+
+create or replace editionable package  body job_info_api
+is
+ 
+    procedure get_row (
+        p_job_id                       in  integer,
+        p_job_title                    out varchar2,
+        p_max_salary                   out number,
+        p_min_salary                   out number
+    )
+    is
+    begin
+        for c1 in (select * from job_info where job_id = p_job_id) loop
+            p_job_title := c1.job_title;
+            p_max_salary := c1.max_salary;
+            p_min_salary := c1.min_salary;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_job_id                       in integer default null,
+        p_job_title                    in varchar2 default null,
+        p_max_salary                   in number default null,
+        p_min_salary                   in number default null
+    )
+    is
+    begin
+        insert into job_info (
+            job_id,
+            job_title,
+            max_salary,
+            min_salary
+        ) values (
+            p_job_id,
+            p_job_title,
+            p_max_salary,
+            p_min_salary
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_job_id                       in integer default null,
+        p_job_title                    in varchar2 default null,
+        p_max_salary                   in number default null,
+        p_min_salary                   in number default null
+    )
+    is
+    begin
+        update  job_info set 
+            job_id = p_job_id,
+            job_title = p_job_title,
+            max_salary = p_max_salary,
+            min_salary = p_min_salary
+        where job_id = p_job_id;
+    end update_row;
+
+    procedure delete_row (
+        p_job_id                       in integer
+    )
+    is
+    begin
+        delete from job_info where job_id = p_job_id;
+    end delete_row;
+
+end job_info_api;
+/
+
+
+create or replace editionable package faculty_info_api
+is
+ 
+    /* example:
+        declare
+            l_faculty_name                  varchar2(64);
+            l_credit_hour_price             integer;
+        begin
+        faculty_info_api.get_row (
+            p_faculty_no                    => 1,
+            p_faculty_name                  => l_faculty_name,
+            p_credit_hour_price             => l_credit_hour_price
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_faculty_no                   in  integer,
+        p_faculty_name                 out varchar2,
+        p_credit_hour_price            out integer
+    );
+ 
+    /* example:
+        begin
+        faculty_info_api.insert_row (
+            p_faculty_no                  => null,
+            p_faculty_name                => null,
+            p_credit_hour_price           => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_faculty_no                   in integer default null,
+        p_faculty_name                 in varchar2 default null,
+        p_credit_hour_price            in integer default null
+    );
+    procedure update_row  (
+        p_faculty_no                   in integer default null,
+        p_faculty_name                 in varchar2 default null,
+        p_credit_hour_price            in integer default null
+    );
+    procedure delete_row (
+        p_faculty_no                   in integer
+    );
+end faculty_info_api;
+/
+
+
+create or replace editionable package  body faculty_info_api
+is
+ 
+    procedure get_row (
+        p_faculty_no                   in  integer,
+        p_faculty_name                 out varchar2,
+        p_credit_hour_price            out integer
+    )
+    is
+    begin
+        for c1 in (select * from faculty_info where faculty_no = p_faculty_no) loop
+            p_faculty_name := c1.faculty_name;
+            p_credit_hour_price := c1.credit_hour_price;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_faculty_no                   in integer default null,
+        p_faculty_name                 in varchar2 default null,
+        p_credit_hour_price            in integer default null
+    )
+    is
+    begin
+        insert into faculty_info (
+            faculty_no,
+            faculty_name,
+            credit_hour_price
+        ) values (
+            p_faculty_no,
+            p_faculty_name,
+            p_credit_hour_price
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_faculty_no                   in integer default null,
+        p_faculty_name                 in varchar2 default null,
+        p_credit_hour_price            in integer default null
+    )
+    is
+    begin
+        update  faculty_info set 
+            faculty_no = p_faculty_no,
+            faculty_name = p_faculty_name,
+            credit_hour_price = p_credit_hour_price
+        where faculty_no = p_faculty_no;
+    end update_row;
+
+    procedure delete_row (
+        p_faculty_no                   in integer
+    )
+    is
+    begin
+        delete from faculty_info where faculty_no = p_faculty_no;
+    end delete_row;
+
+end faculty_info_api;
+/
+
+
+create or replace editionable package department_info_api
+is
+ 
+    /* example:
+        declare
+            l_department_name               varchar2(64);
+            l_faculty_code                  integer;
+        begin
+        department_info_api.get_row (
+            p_department_no                 => 1,
+            p_department_name               => l_department_name,
+            p_faculty_code                  => l_faculty_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_department_no                in  integer,
+        p_department_name              out varchar2,
+        p_faculty_code                 out integer
+    );
+ 
+    /* example:
+        begin
+        department_info_api.insert_row (
+            p_department_no               => null,
+            p_department_name             => null,
+            p_faculty_code                => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_department_no                in integer default null,
+        p_department_name              in varchar2 default null,
+        p_faculty_code                 in integer default null
+    );
+    procedure update_row  (
+        p_department_no                in integer default null,
+        p_department_name              in varchar2 default null,
+        p_faculty_code                 in integer default null
+    );
+    procedure delete_row (
+        p_department_no                in integer
+    );
+end department_info_api;
+/
+
+
+create or replace editionable package  body department_info_api
+is
+ 
+    procedure get_row (
+        p_department_no                in  integer,
+        p_department_name              out varchar2,
+        p_faculty_code                 out integer
+    )
+    is
+    begin
+        for c1 in (select * from department_info where department_no = p_department_no) loop
+            p_department_name := c1.department_name;
+            p_faculty_code := c1.faculty_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_department_no                in integer default null,
+        p_department_name              in varchar2 default null,
+        p_faculty_code                 in integer default null
+    )
+    is
+    begin
+        insert into department_info (
+            department_no,
+            department_name,
+            faculty_code
+        ) values (
+            p_department_no,
+            p_department_name,
+            p_faculty_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_department_no                in integer default null,
+        p_department_name              in varchar2 default null,
+        p_faculty_code                 in integer default null
+    )
+    is
+    begin
+        update  department_info set 
+            department_no = p_department_no,
+            department_name = p_department_name,
+            faculty_code = p_faculty_code
+        where department_no = p_department_no;
+    end update_row;
+
+    procedure delete_row (
+        p_department_no                in integer
+    )
+    is
+    begin
+        delete from department_info where department_no = p_department_no;
+    end delete_row;
+
+end department_info_api;
+/
+
+
+create or replace editionable package employee_info_api
+is
+ 
+    /* example:
+        declare
+            l_first_name                    varchar2(32);
+            l_middle_name                   varchar2(32);
+            l_last_name                     varchar2(32);
+            l_arddress                      varchar2(64);
+            l_phone_no                      integer;
+            l_email                         varchar2(64);
+            l_salary                        number;
+            l_ssn                           number;
+            l_gender                        varchar2(1);
+            l_birth_date                    date;
+            l_job_code                      integer;
+            l_department_code               integer;
+            l_room_code                     integer;
+        begin
+        employee_info_api.get_row (
+            p_employee_id                   => 1,
+            p_first_name                    => l_first_name,
+            p_middle_name                   => l_middle_name,
+            p_last_name                     => l_last_name,
+            p_arddress                      => l_arddress,
+            p_phone_no                      => l_phone_no,
+            p_email                         => l_email,
+            p_salary                        => l_salary,
+            p_ssn                           => l_ssn,
+            p_gender                        => l_gender,
+            p_birth_date                    => l_birth_date,
+            p_job_code                      => l_job_code,
+            p_department_code               => l_department_code,
+            p_room_code                     => l_room_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_employee_id                  in  integer,
+        p_first_name                   out varchar2,
+        p_middle_name                  out varchar2,
+        p_last_name                    out varchar2,
+        p_arddress                     out varchar2,
+        p_phone_no                     out integer,
+        p_email                        out varchar2,
+        p_salary                       out number,
+        p_ssn                          out number,
+        p_gender                       out varchar2,
+        p_birth_date                   out date,
+        p_job_code                     out integer,
+        p_department_code              out integer,
+        p_room_code                    out integer
+    );
+ 
+    /* example:
+        begin
+        employee_info_api.insert_row (
+            p_employee_id                 => null,
+            p_first_name                  => null,
+            p_middle_name                 => null,
+            p_last_name                   => null,
+            p_arddress                    => null,
+            p_phone_no                    => null,
+            p_email                       => null,
+            p_salary                      => null,
+            p_ssn                         => null,
+            p_gender                      => null,
+            p_birth_date                  => null,
+            p_job_code                    => null,
+            p_department_code             => null,
+            p_room_code                   => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_employee_id                  in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_no                     in integer default null,
+        p_email                        in varchar2 default null,
+        p_salary                       in number default null,
+        p_ssn                          in number default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_job_code                     in integer default null,
+        p_department_code              in integer default null,
+        p_room_code                    in integer default null
+    );
+    procedure update_row  (
+        p_employee_id                  in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_no                     in integer default null,
+        p_email                        in varchar2 default null,
+        p_salary                       in number default null,
+        p_ssn                          in number default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_job_code                     in integer default null,
+        p_department_code              in integer default null,
+        p_room_code                    in integer default null
+    );
+    procedure delete_row (
+        p_employee_id                  in integer
+    );
+end employee_info_api;
+/
+
+
+create or replace editionable package  body employee_info_api
+is
+ 
+    procedure get_row (
+        p_employee_id                  in  integer,
+        p_first_name                   out varchar2,
+        p_middle_name                  out varchar2,
+        p_last_name                    out varchar2,
+        p_arddress                     out varchar2,
+        p_phone_no                     out integer,
+        p_email                        out varchar2,
+        p_salary                       out number,
+        p_ssn                          out number,
+        p_gender                       out varchar2,
+        p_birth_date                   out date,
+        p_job_code                     out integer,
+        p_department_code              out integer,
+        p_room_code                    out integer
+    )
+    is
+    begin
+        for c1 in (select * from employee_info where employee_id = p_employee_id) loop
+            p_first_name := c1.first_name;
+            p_middle_name := c1.middle_name;
+            p_last_name := c1.last_name;
+            p_arddress := c1.arddress;
+            p_phone_no := c1.phone_no;
+            p_email := c1.email;
+            p_salary := c1.salary;
+            p_ssn := c1.ssn;
+            p_gender := c1.gender;
+            p_birth_date := c1.birth_date;
+            p_job_code := c1.job_code;
+            p_department_code := c1.department_code;
+            p_room_code := c1.room_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_employee_id                  in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_no                     in integer default null,
+        p_email                        in varchar2 default null,
+        p_salary                       in number default null,
+        p_ssn                          in number default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_job_code                     in integer default null,
+        p_department_code              in integer default null,
+        p_room_code                    in integer default null
+    )
+    is
+    begin
+        insert into employee_info (
+            employee_id,
+            first_name,
+            middle_name,
+            last_name,
+            arddress,
+            phone_no,
+            email,
+            salary,
+            ssn,
+            gender,
+            birth_date,
+            job_code,
+            department_code,
+            room_code
+        ) values (
+            p_employee_id,
+            p_first_name,
+            p_middle_name,
+            p_last_name,
+            p_arddress,
+            p_phone_no,
+            p_email,
+            p_salary,
+            p_ssn,
+            p_gender,
+            p_birth_date,
+            p_job_code,
+            p_department_code,
+            p_room_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_employee_id                  in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_no                     in integer default null,
+        p_email                        in varchar2 default null,
+        p_salary                       in number default null,
+        p_ssn                          in number default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_job_code                     in integer default null,
+        p_department_code              in integer default null,
+        p_room_code                    in integer default null
+    )
+    is
+    begin
+        update  employee_info set 
+            employee_id = p_employee_id,
+            first_name = p_first_name,
+            middle_name = p_middle_name,
+            last_name = p_last_name,
+            arddress = p_arddress,
+            phone_no = p_phone_no,
+            email = p_email,
+            salary = p_salary,
+            ssn = p_ssn,
+            gender = p_gender,
+            birth_date = p_birth_date,
+            job_code = p_job_code,
+            department_code = p_department_code,
+            room_code = p_room_code
+        where employee_id = p_employee_id;
+    end update_row;
+
+    procedure delete_row (
+        p_employee_id                  in integer
+    )
+    is
+    begin
+        delete from employee_info where employee_id = p_employee_id;
+    end delete_row;
+
+end employee_info_api;
+/
+
+
+create or replace editionable package city_api
+is
+ 
+    /* example:
+        declare
+            l_city_name                     varchar2(64);
+        begin
+        city_api.get_row (
+            p_city_no                       => 1,
+            p_city_name                     => l_city_name
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_city_no                      in  integer,
+        p_city_name                    out varchar2
+    );
+ 
+    /* example:
+        begin
+        city_api.insert_row (
+            p_city_no                     => null,
+            p_city_name                   => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_city_no                      in integer default null,
+        p_city_name                    in varchar2 default null
+    );
+    procedure update_row  (
+        p_city_no                      in integer default null,
+        p_city_name                    in varchar2 default null
+    );
+    procedure delete_row (
+        p_city_no                      in integer
+    );
+end city_api;
+/
+
+
+create or replace editionable package  body city_api
+is
+ 
+    procedure get_row (
+        p_city_no                      in  integer,
+        p_city_name                    out varchar2
+    )
+    is
+    begin
+        for c1 in (select * from city where city_no = p_city_no) loop
+            p_city_name := c1.city_name;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_city_no                      in integer default null,
+        p_city_name                    in varchar2 default null
+    )
+    is
+    begin
+        insert into city (
+            city_no,
+            city_name
+        ) values (
+            p_city_no,
+            p_city_name
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_city_no                      in integer default null,
+        p_city_name                    in varchar2 default null
+    )
+    is
+    begin
+        update  city set 
+            city_no = p_city_no,
+            city_name = p_city_name
+        where city_no = p_city_no;
+    end update_row;
+
+    procedure delete_row (
+        p_city_no                      in integer
+    )
+    is
+    begin
+        delete from city where city_no = p_city_no;
+    end delete_row;
+
+end city_api;
+/
+
+
+create or replace editionable package sitting_number_api
+is
+ 
+    /* example:
+        declare
+            l_ssn                           integer;
+            l_gpa                           number;
+            l_major                         varchar2(2);
+        begin
+        sitting_number_api.get_row (
+            p_high_school_sitting_no        => 1,
+            p_ssn                           => l_ssn,
+            p_gpa                           => l_gpa,
+            p_major                         => l_major
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_high_school_sitting_no       in  integer,
+        p_ssn                          out integer,
+        p_gpa                          out number,
+        p_major                        out varchar2
+    );
+ 
+    /* example:
+        begin
+        sitting_number_api.insert_row (
+            p_high_school_sitting_no      => null,
+            p_ssn                         => null,
+            p_gpa                         => null,
+            p_major                       => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_high_school_sitting_no       in integer default null,
+        p_ssn                          in integer default null,
+        p_gpa                          in number default null,
+        p_major                        in varchar2 default null
+    );
+    procedure update_row  (
+        p_high_school_sitting_no       in integer default null,
+        p_ssn                          in integer default null,
+        p_gpa                          in number default null,
+        p_major                        in varchar2 default null
+    );
+    procedure delete_row (
+        p_high_school_sitting_no       in integer
+    );
+end sitting_number_api;
+/
+
+
+create or replace editionable package  body sitting_number_api
+is
+ 
+    procedure get_row (
+        p_high_school_sitting_no       in  integer,
+        p_ssn                          out integer,
+        p_gpa                          out number,
+        p_major                        out varchar2
+    )
+    is
+    begin
+        for c1 in (select * from sitting_number where high_school_sitting_no = p_high_school_sitting_no) loop
+            p_ssn := c1.ssn;
+            p_gpa := c1.gpa;
+            p_major := c1.major;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_high_school_sitting_no       in integer default null,
+        p_ssn                          in integer default null,
+        p_gpa                          in number default null,
+        p_major                        in varchar2 default null
+    )
+    is
+    begin
+        insert into sitting_number (
+            high_school_sitting_no,
+            ssn,
+            gpa,
+            major
+        ) values (
+            p_high_school_sitting_no,
+            p_ssn,
+            p_gpa,
+            p_major
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_high_school_sitting_no       in integer default null,
+        p_ssn                          in integer default null,
+        p_gpa                          in number default null,
+        p_major                        in varchar2 default null
+    )
+    is
+    begin
+        update  sitting_number set 
+            high_school_sitting_no = p_high_school_sitting_no,
+            ssn = p_ssn,
+            gpa = p_gpa,
+            major = p_major
+        where high_school_sitting_no = p_high_school_sitting_no;
+    end update_row;
+
+    procedure delete_row (
+        p_high_school_sitting_no       in integer
+    )
+    is
+    begin
+        delete from sitting_number where high_school_sitting_no = p_high_school_sitting_no;
+    end delete_row;
+
+end sitting_number_api;
+/
+
+
+create or replace editionable package student_info_api
+is
+ 
+    /* example:
+        declare
+            l_first_name                    varchar2(32);
+            l_middle_name                   varchar2(32);
+            l_last_name                     varchar2(32);
+            l_degree_program                varchar2(3);
+            l_arddress                      varchar2(64);
+            l_phone_number                  integer;
+            l_email                         varchar2(64);
+            l_gender                        varchar2(1);
+            l_birth_date                    date;
+            l_city_code                     integer;
+            l_sitting_number_code           integer;
+        begin
+        student_info_api.get_row (
+            p_student_id                    => 1,
+            p_first_name                    => l_first_name,
+            p_middle_name                   => l_middle_name,
+            p_last_name                     => l_last_name,
+            p_degree_program                => l_degree_program,
+            p_arddress                      => l_arddress,
+            p_phone_number                  => l_phone_number,
+            p_email                         => l_email,
+            p_gender                        => l_gender,
+            p_birth_date                    => l_birth_date,
+            p_city_code                     => l_city_code,
+            p_sitting_number_code           => l_sitting_number_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_student_id                   in  integer,
+        p_first_name                   out varchar2,
+        p_middle_name                  out varchar2,
+        p_last_name                    out varchar2,
+        p_degree_program               out varchar2,
+        p_arddress                     out varchar2,
+        p_phone_number                 out integer,
+        p_email                        out varchar2,
+        p_gender                       out varchar2,
+        p_birth_date                   out date,
+        p_city_code                    out integer,
+        p_sitting_number_code          out integer
+    );
+ 
+    /* example:
+        begin
+        student_info_api.insert_row (
+            p_student_id                  => null,
+            p_first_name                  => null,
+            p_middle_name                 => null,
+            p_last_name                   => null,
+            p_degree_program              => null,
+            p_arddress                    => null,
+            p_phone_number                => null,
+            p_email                       => null,
+            p_gender                      => null,
+            p_birth_date                  => null,
+            p_city_code                   => null,
+            p_sitting_number_code         => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_student_id                   in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_degree_program               in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_number                 in integer default null,
+        p_email                        in varchar2 default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_city_code                    in integer default null,
+        p_sitting_number_code          in integer default null
+    );
+    procedure update_row  (
+        p_student_id                   in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_degree_program               in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_number                 in integer default null,
+        p_email                        in varchar2 default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_city_code                    in integer default null,
+        p_sitting_number_code          in integer default null
+    );
+    procedure delete_row (
+        p_student_id                   in integer
+    );
+end student_info_api;
+/
+
+
+create or replace editionable package  body student_info_api
+is
+ 
+    procedure get_row (
+        p_student_id                   in  integer,
+        p_first_name                   out varchar2,
+        p_middle_name                  out varchar2,
+        p_last_name                    out varchar2,
+        p_degree_program               out varchar2,
+        p_arddress                     out varchar2,
+        p_phone_number                 out integer,
+        p_email                        out varchar2,
+        p_gender                       out varchar2,
+        p_birth_date                   out date,
+        p_city_code                    out integer,
+        p_sitting_number_code          out integer
+    )
+    is
+    begin
+        for c1 in (select * from student_info where student_id = p_student_id) loop
+            p_first_name := c1.first_name;
+            p_middle_name := c1.middle_name;
+            p_last_name := c1.last_name;
+            p_degree_program := c1.degree_program;
+            p_arddress := c1.arddress;
+            p_phone_number := c1.phone_number;
+            p_email := c1.email;
+            p_gender := c1.gender;
+            p_birth_date := c1.birth_date;
+            p_city_code := c1.city_code;
+            p_sitting_number_code := c1.sitting_number_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_student_id                   in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_degree_program               in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_number                 in integer default null,
+        p_email                        in varchar2 default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_city_code                    in integer default null,
+        p_sitting_number_code          in integer default null
+    )
+    is
+    begin
+        insert into student_info (
+            student_id,
+            first_name,
+            middle_name,
+            last_name,
+            degree_program,
+            arddress,
+            phone_number,
+            email,
+            gender,
+            birth_date,
+            city_code,
+            sitting_number_code
+        ) values (
+            p_student_id,
+            p_first_name,
+            p_middle_name,
+            p_last_name,
+            p_degree_program,
+            p_arddress,
+            p_phone_number,
+            p_email,
+            p_gender,
+            p_birth_date,
+            p_city_code,
+            p_sitting_number_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_student_id                   in integer default null,
+        p_first_name                   in varchar2 default null,
+        p_middle_name                  in varchar2 default null,
+        p_last_name                    in varchar2 default null,
+        p_degree_program               in varchar2 default null,
+        p_arddress                     in varchar2 default null,
+        p_phone_number                 in integer default null,
+        p_email                        in varchar2 default null,
+        p_gender                       in varchar2 default null,
+        p_birth_date                   in date default null,
+        p_city_code                    in integer default null,
+        p_sitting_number_code          in integer default null
+    )
+    is
+    begin
+        update  student_info set 
+            student_id = p_student_id,
+            first_name = p_first_name,
+            middle_name = p_middle_name,
+            last_name = p_last_name,
+            degree_program = p_degree_program,
+            arddress = p_arddress,
+            phone_number = p_phone_number,
+            email = p_email,
+            gender = p_gender,
+            birth_date = p_birth_date,
+            city_code = p_city_code,
+            sitting_number_code = p_sitting_number_code
+        where student_id = p_student_id;
+    end update_row;
+
+    procedure delete_row (
+        p_student_id                   in integer
+    )
+    is
+    begin
+        delete from student_info where student_id = p_student_id;
+    end delete_row;
+
+end student_info_api;
+/
+
+
+create or replace editionable package desires_api
+is
+ 
+    /* example:
+        declare
+            l_desire_no                     integer;
+            l_faculty_code                  integer;
+            l_student_code                  integer;
+        begin
+        desires_api.get_row (
+            p_desire_seq                    => 1,
+            p_desire_no                     => l_desire_no,
+            p_faculty_code                  => l_faculty_code,
+            p_student_code                  => l_student_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_desire_seq                   in  integer,
+        p_desire_no                    out integer,
+        p_faculty_code                 out integer,
+        p_student_code                 out integer
+    );
+ 
+    /* example:
+        begin
+        desires_api.insert_row (
+            p_desire_seq                  => null,
+            p_desire_no                   => null,
+            p_faculty_code                => null,
+            p_student_code                => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_desire_seq                   in integer default null,
+        p_desire_no                    in integer default null,
+        p_faculty_code                 in integer default null,
+        p_student_code                 in integer default null
+    );
+    procedure update_row  (
+        p_desire_seq                   in integer default null,
+        p_desire_no                    in integer default null,
+        p_faculty_code                 in integer default null,
+        p_student_code                 in integer default null
+    );
+    procedure delete_row (
+        p_desire_seq                   in integer
+    );
+end desires_api;
+/
+
+
+create or replace editionable package  body desires_api
+is
+ 
+    procedure get_row (
+        p_desire_seq                   in  integer,
+        p_desire_no                    out integer,
+        p_faculty_code                 out integer,
+        p_student_code                 out integer
+    )
+    is
+    begin
+        for c1 in (select * from desires where desire_seq = p_desire_seq) loop
+            p_desire_no := c1.desire_no;
+            p_faculty_code := c1.faculty_code;
+            p_student_code := c1.student_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_desire_seq                   in integer default null,
+        p_desire_no                    in integer default null,
+        p_faculty_code                 in integer default null,
+        p_student_code                 in integer default null
+    )
+    is
+    begin
+        insert into desires (
+            desire_seq,
+            desire_no,
+            faculty_code,
+            student_code
+        ) values (
+            p_desire_seq,
+            p_desire_no,
+            p_faculty_code,
+            p_student_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_desire_seq                   in integer default null,
+        p_desire_no                    in integer default null,
+        p_faculty_code                 in integer default null,
+        p_student_code                 in integer default null
+    )
+    is
+    begin
+        update  desires set 
+            desire_seq = p_desire_seq,
+            desire_no = p_desire_no,
+            faculty_code = p_faculty_code,
+            student_code = p_student_code
+        where desire_seq = p_desire_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_desire_seq                   in integer
+    )
+    is
+    begin
+        delete from desires where desire_seq = p_desire_seq;
+    end delete_row;
+
+end desires_api;
+/
+
+
+create or replace editionable package semester_info_api
+is
+ 
+    /* example:
+        declare
+            l_semester_no                   integer;
+            l_semester_start_date           date;
+            l_semester_end_date             date;
+            l_paid_quit_start_date          date;
+            l_paid_quit_end_date            date;
+            l_unpaid_quit_start_date        date;
+            l_unpaid_quit_end_date          date;
+        begin
+        semester_info_api.get_row (
+            p_semester_seq                  => 1,
+            p_semester_no                   => l_semester_no,
+            p_semester_start_date           => l_semester_start_date,
+            p_semester_end_date             => l_semester_end_date,
+            p_paid_quit_start_date          => l_paid_quit_start_date,
+            p_paid_quit_end_date            => l_paid_quit_end_date,
+            p_unpaid_quit_start_date        => l_unpaid_quit_start_date,
+            p_unpaid_quit_end_date          => l_unpaid_quit_end_date
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_semester_seq                 in  integer,
+        p_semester_no                  out integer,
+        p_semester_start_date          out date,
+        p_semester_end_date            out date,
+        p_paid_quit_start_date         out date,
+        p_paid_quit_end_date           out date,
+        p_unpaid_quit_start_date       out date,
+        p_unpaid_quit_end_date         out date
+    );
+ 
+    /* example:
+        begin
+        semester_info_api.insert_row (
+            p_semester_seq                => null,
+            p_semester_no                 => null,
+            p_semester_start_date         => null,
+            p_semester_end_date           => null,
+            p_paid_quit_start_date        => null,
+            p_paid_quit_end_date          => null,
+            p_unpaid_quit_start_date      => null,
+            p_unpaid_quit_end_date        => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_semester_seq                 in integer default null,
+        p_semester_no                  in integer default null,
+        p_semester_start_date          in date default null,
+        p_semester_end_date            in date default null,
+        p_paid_quit_start_date         in date default null,
+        p_paid_quit_end_date           in date default null,
+        p_unpaid_quit_start_date       in date default null,
+        p_unpaid_quit_end_date         in date default null
+    );
+    procedure update_row  (
+        p_semester_seq                 in integer default null,
+        p_semester_no                  in integer default null,
+        p_semester_start_date          in date default null,
+        p_semester_end_date            in date default null,
+        p_paid_quit_start_date         in date default null,
+        p_paid_quit_end_date           in date default null,
+        p_unpaid_quit_start_date       in date default null,
+        p_unpaid_quit_end_date         in date default null
+    );
+    procedure delete_row (
+        p_semester_seq                 in integer
+    );
+end semester_info_api;
+/
+
+
+create or replace editionable package  body semester_info_api
+is
+ 
+    procedure get_row (
+        p_semester_seq                 in  integer,
+        p_semester_no                  out integer,
+        p_semester_start_date          out date,
+        p_semester_end_date            out date,
+        p_paid_quit_start_date         out date,
+        p_paid_quit_end_date           out date,
+        p_unpaid_quit_start_date       out date,
+        p_unpaid_quit_end_date         out date
+    )
+    is
+    begin
+        for c1 in (select * from semester_info where semester_seq = p_semester_seq) loop
+            p_semester_no := c1.semester_no;
+            p_semester_start_date := c1.semester_start_date;
+            p_semester_end_date := c1.semester_end_date;
+            p_paid_quit_start_date := c1.paid_quit_start_date;
+            p_paid_quit_end_date := c1.paid_quit_end_date;
+            p_unpaid_quit_start_date := c1.unpaid_quit_start_date;
+            p_unpaid_quit_end_date := c1.unpaid_quit_end_date;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_semester_seq                 in integer default null,
+        p_semester_no                  in integer default null,
+        p_semester_start_date          in date default null,
+        p_semester_end_date            in date default null,
+        p_paid_quit_start_date         in date default null,
+        p_paid_quit_end_date           in date default null,
+        p_unpaid_quit_start_date       in date default null,
+        p_unpaid_quit_end_date         in date default null
+    )
+    is
+    begin
+        insert into semester_info (
+            semester_seq,
+            semester_no,
+            semester_start_date,
+            semester_end_date,
+            paid_quit_start_date,
+            paid_quit_end_date,
+            unpaid_quit_start_date,
+            unpaid_quit_end_date
+        ) values (
+            p_semester_seq,
+            p_semester_no,
+            p_semester_start_date,
+            p_semester_end_date,
+            p_paid_quit_start_date,
+            p_paid_quit_end_date,
+            p_unpaid_quit_start_date,
+            p_unpaid_quit_end_date
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_semester_seq                 in integer default null,
+        p_semester_no                  in integer default null,
+        p_semester_start_date          in date default null,
+        p_semester_end_date            in date default null,
+        p_paid_quit_start_date         in date default null,
+        p_paid_quit_end_date           in date default null,
+        p_unpaid_quit_start_date       in date default null,
+        p_unpaid_quit_end_date         in date default null
+    )
+    is
+    begin
+        update  semester_info set 
+            semester_seq = p_semester_seq,
+            semester_no = p_semester_no,
+            semester_start_date = p_semester_start_date,
+            semester_end_date = p_semester_end_date,
+            paid_quit_start_date = p_paid_quit_start_date,
+            paid_quit_end_date = p_paid_quit_end_date,
+            unpaid_quit_start_date = p_unpaid_quit_start_date,
+            unpaid_quit_end_date = p_unpaid_quit_end_date
+        where semester_seq = p_semester_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_semester_seq                 in integer
+    )
+    is
+    begin
+        delete from semester_info where semester_seq = p_semester_seq;
+    end delete_row;
+
+end semester_info_api;
+/
+
+
+create or replace editionable package payments_info_api
+is
+ 
+    /* example:
+        declare
+            l_payments_name                 varchar2(64);
+            l_default_value                 integer;
+            l_payments_type                 varchar2(1);
+            l_payments_move                 varchar2(1);
+        begin
+        payments_info_api.get_row (
+            p_payments_info_pk              => 1,
+            p_payments_name                 => l_payments_name,
+            p_default_value                 => l_default_value,
+            p_payments_type                 => l_payments_type,
+            p_payments_move                 => l_payments_move
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_payments_info_pk             in  integer,
+        p_payments_name                out varchar2,
+        p_default_value                out integer,
+        p_payments_type                out varchar2,
+        p_payments_move                out varchar2
+    );
+ 
+    /* example:
+        begin
+        payments_info_api.insert_row (
+            p_payments_info_pk            => null,
+            p_payments_name               => null,
+            p_default_value               => null,
+            p_payments_type               => null,
+            p_payments_move               => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_payments_info_pk             in integer default null,
+        p_payments_name                in varchar2 default null,
+        p_default_value                in integer default null,
+        p_payments_type                in varchar2 default null,
+        p_payments_move                in varchar2 default null
+    );
+    procedure update_row  (
+        p_payments_info_pk             in integer default null,
+        p_payments_name                in varchar2 default null,
+        p_default_value                in integer default null,
+        p_payments_type                in varchar2 default null,
+        p_payments_move                in varchar2 default null
+    );
+    procedure delete_row (
+        p_payments_info_pk             in integer
+    );
+end payments_info_api;
+/
+
+
+create or replace editionable package  body payments_info_api
+is
+ 
+    procedure get_row (
+        p_payments_info_pk             in  integer,
+        p_payments_name                out varchar2,
+        p_default_value                out integer,
+        p_payments_type                out varchar2,
+        p_payments_move                out varchar2
+    )
+    is
+    begin
+        for c1 in (select * from payments_info where payments_info_pk = p_payments_info_pk) loop
+            p_payments_name := c1.payments_name;
+            p_default_value := c1.default_value;
+            p_payments_type := c1.payments_type;
+            p_payments_move := c1.payments_move;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_payments_info_pk             in integer default null,
+        p_payments_name                in varchar2 default null,
+        p_default_value                in integer default null,
+        p_payments_type                in varchar2 default null,
+        p_payments_move                in varchar2 default null
+    )
+    is
+    begin
+        insert into payments_info (
+            payments_info_pk,
+            payments_name,
+            default_value,
+            payments_type,
+            payments_move
+        ) values (
+            p_payments_info_pk,
+            p_payments_name,
+            p_default_value,
+            p_payments_type,
+            p_payments_move
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_payments_info_pk             in integer default null,
+        p_payments_name                in varchar2 default null,
+        p_default_value                in integer default null,
+        p_payments_type                in varchar2 default null,
+        p_payments_move                in varchar2 default null
+    )
+    is
+    begin
+        update  payments_info set 
+            payments_info_pk = p_payments_info_pk,
+            payments_name = p_payments_name,
+            default_value = p_default_value,
+            payments_type = p_payments_type,
+            payments_move = p_payments_move
+        where payments_info_pk = p_payments_info_pk;
+    end update_row;
+
+    procedure delete_row (
+        p_payments_info_pk             in integer
+    )
+    is
+    begin
+        delete from payments_info where payments_info_pk = p_payments_info_pk;
+    end delete_row;
+
+end payments_info_api;
+/
+
+
+create or replace editionable package payments_details_api
+is
+ 
+    /* example:
+        declare
+            l_credit_amount                 number;
+            l_debit_amount                  number;
+            l_payment_date                  date;
+            l_student_code                  integer;
+            l_semester_code                 integer;
+            l_payments_code                 integer;
+        begin
+        payments_details_api.get_row (
+            p_payments_serial_no            => 1,
+            p_credit_amount                 => l_credit_amount,
+            p_debit_amount                  => l_debit_amount,
+            p_payment_date                  => l_payment_date,
+            p_student_code                  => l_student_code,
+            p_semester_code                 => l_semester_code,
+            p_payments_code                 => l_payments_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_payments_serial_no           in  integer,
+        p_credit_amount                out number,
+        p_debit_amount                 out number,
+        p_payment_date                 out date,
+        p_student_code                 out integer,
+        p_semester_code                out integer,
+        p_payments_code                out integer
+    );
+ 
+    /* example:
+        begin
+        payments_details_api.insert_row (
+            p_payments_serial_no          => null,
+            p_credit_amount               => null,
+            p_debit_amount                => null,
+            p_payment_date                => null,
+            p_student_code                => null,
+            p_semester_code               => null,
+            p_payments_code               => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_payments_serial_no           in integer default null,
+        p_credit_amount                in number default null,
+        p_debit_amount                 in number default null,
+        p_payment_date                 in date default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null,
+        p_payments_code                in integer default null
+    );
+    procedure update_row  (
+        p_payments_serial_no           in integer default null,
+        p_credit_amount                in number default null,
+        p_debit_amount                 in number default null,
+        p_payment_date                 in date default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null,
+        p_payments_code                in integer default null
+    );
+    procedure delete_row (
+        p_payments_serial_no           in integer
+    );
+end payments_details_api;
+/
+
+
+create or replace editionable package  body payments_details_api
+is
+ 
+    procedure get_row (
+        p_payments_serial_no           in  integer,
+        p_credit_amount                out number,
+        p_debit_amount                 out number,
+        p_payment_date                 out date,
+        p_student_code                 out integer,
+        p_semester_code                out integer,
+        p_payments_code                out integer
+    )
+    is
+    begin
+        for c1 in (select * from payments_details where payments_serial_no = p_payments_serial_no) loop
+            p_credit_amount := c1.credit_amount;
+            p_debit_amount := c1.debit_amount;
+            p_payment_date := c1.payment_date;
+            p_student_code := c1.student_code;
+            p_semester_code := c1.semester_code;
+            p_payments_code := c1.payments_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_payments_serial_no           in integer default null,
+        p_credit_amount                in number default null,
+        p_debit_amount                 in number default null,
+        p_payment_date                 in date default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null,
+        p_payments_code                in integer default null
+    )
+    is
+    begin
+        insert into payments_details (
+            payments_serial_no,
+            credit_amount,
+            debit_amount,
+            payment_date,
+            student_code,
+            semester_code,
+            payments_code
+        ) values (
+            p_payments_serial_no,
+            p_credit_amount,
+            p_debit_amount,
+            p_payment_date,
+            p_student_code,
+            p_semester_code,
+            p_payments_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_payments_serial_no           in integer default null,
+        p_credit_amount                in number default null,
+        p_debit_amount                 in number default null,
+        p_payment_date                 in date default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null,
+        p_payments_code                in integer default null
+    )
+    is
+    begin
+        update  payments_details set 
+            payments_serial_no = p_payments_serial_no,
+            credit_amount = p_credit_amount,
+            debit_amount = p_debit_amount,
+            payment_date = p_payment_date,
+            student_code = p_student_code,
+            semester_code = p_semester_code,
+            payments_code = p_payments_code
+        where payments_serial_no = p_payments_serial_no;
+    end update_row;
+
+    procedure delete_row (
+        p_payments_serial_no           in integer
+    )
+    is
+    begin
+        delete from payments_details where payments_serial_no = p_payments_serial_no;
+    end delete_row;
+
+end payments_details_api;
+/
+
+
+create or replace editionable package student_semester_registeration_api
+is
+ 
+    /* example:
+        declare
+            l_gpa                           number;
+            l_cgpa                          number;
+            l_status                        varchar2(1);
+            l_student_code                  integer;
+            l_semester_code                 integer;
+        begin
+        student_semester_registera_api.get_row (
+            p_student_semester_reg_seq      => 1,
+            p_gpa                           => l_gpa,
+            p_cgpa                          => l_cgpa,
+            p_status                        => l_status,
+            p_student_code                  => l_student_code,
+            p_semester_code                 => l_semester_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_student_semester_reg_seq     in  integer,
+        p_gpa                          out number,
+        p_cgpa                         out number,
+        p_status                       out varchar2,
+        p_student_code                 out integer,
+        p_semester_code                out integer
+    );
+ 
+    /* example:
+        begin
+        student_semester_registera_api.insert_row (
+            p_student_semester_reg_seq    => null,
+            p_gpa                         => null,
+            p_cgpa                        => null,
+            p_status                      => null,
+            p_student_code                => null,
+            p_semester_code               => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_student_semester_reg_seq     in integer default null,
+        p_gpa                          in number default null,
+        p_cgpa                         in number default null,
+        p_status                       in varchar2 default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null
+    );
+    procedure update_row  (
+        p_student_semester_reg_seq     in integer default null,
+        p_gpa                          in number default null,
+        p_cgpa                         in number default null,
+        p_status                       in varchar2 default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null
+    );
+    procedure delete_row (
+        p_student_semester_reg_seq     in integer
+    );
+end student_semester_registeration_api;
+/
+
+
+create or replace editionable package  body student_semester_registeration_api
+is
+ 
+    procedure get_row (
+        p_student_semester_reg_seq     in  integer,
+        p_gpa                          out number,
+        p_cgpa                         out number,
+        p_status                       out varchar2,
+        p_student_code                 out integer,
+        p_semester_code                out integer
+    )
+    is
+    begin
+        for c1 in (select * from student_semester_registeration where student_semester_reg_seq = p_student_semester_reg_seq) loop
+            p_gpa := c1.gpa;
+            p_cgpa := c1.cgpa;
+            p_status := c1.status;
+            p_student_code := c1.student_code;
+            p_semester_code := c1.semester_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_student_semester_reg_seq     in integer default null,
+        p_gpa                          in number default null,
+        p_cgpa                         in number default null,
+        p_status                       in varchar2 default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null
+    )
+    is
+    begin
+        insert into student_semester_registeration (
+            student_semester_reg_seq,
+            gpa,
+            cgpa,
+            status,
+            student_code,
+            semester_code
+        ) values (
+            p_student_semester_reg_seq,
+            p_gpa,
+            p_cgpa,
+            p_status,
+            p_student_code,
+            p_semester_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_student_semester_reg_seq     in integer default null,
+        p_gpa                          in number default null,
+        p_cgpa                         in number default null,
+        p_status                       in varchar2 default null,
+        p_student_code                 in integer default null,
+        p_semester_code                in integer default null
+    )
+    is
+    begin
+        update  student_semester_registeration set 
+            student_semester_reg_seq = p_student_semester_reg_seq,
+            gpa = p_gpa,
+            cgpa = p_cgpa,
+            status = p_status,
+            student_code = p_student_code,
+            semester_code = p_semester_code
+        where student_semester_reg_seq = p_student_semester_reg_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_student_semester_reg_seq     in integer
+    )
+    is
+    begin
+        delete from student_semester_registeration where student_semester_reg_seq = p_student_semester_reg_seq;
+    end delete_row;
+
+end student_semester_registeration_api;
+/
+
+
+create or replace editionable package course_info_api
+is
+ 
+    /* example:
+        declare
+            l_course_name                   varchar2(64);
+            l_course_description            varchar2(256);
+            l_no_of_hours                   integer;
+        begin
+        course_info_api.get_row (
+            p_course_no                     => 1,
+            p_course_name                   => l_course_name,
+            p_course_description            => l_course_description,
+            p_no_of_hours                   => l_no_of_hours
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_course_no                    in  integer,
+        p_course_name                  out varchar2,
+        p_course_description           out varchar2,
+        p_no_of_hours                  out integer
+    );
+ 
+    /* example:
+        begin
+        course_info_api.insert_row (
+            p_course_no                   => null,
+            p_course_name                 => null,
+            p_course_description          => null,
+            p_no_of_hours                 => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_course_no                    in integer default null,
+        p_course_name                  in varchar2 default null,
+        p_course_description           in varchar2 default null,
+        p_no_of_hours                  in integer default null
+    );
+    procedure update_row  (
+        p_course_no                    in integer default null,
+        p_course_name                  in varchar2 default null,
+        p_course_description           in varchar2 default null,
+        p_no_of_hours                  in integer default null
+    );
+    procedure delete_row (
+        p_course_no                    in integer
+    );
+end course_info_api;
+/
+
+
+create or replace editionable package  body course_info_api
+is
+ 
+    procedure get_row (
+        p_course_no                    in  integer,
+        p_course_name                  out varchar2,
+        p_course_description           out varchar2,
+        p_no_of_hours                  out integer
+    )
+    is
+    begin
+        for c1 in (select * from course_info where course_no = p_course_no) loop
+            p_course_name := c1.course_name;
+            p_course_description := c1.course_description;
+            p_no_of_hours := c1.no_of_hours;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_course_no                    in integer default null,
+        p_course_name                  in varchar2 default null,
+        p_course_description           in varchar2 default null,
+        p_no_of_hours                  in integer default null
+    )
+    is
+    begin
+        insert into course_info (
+            course_no,
+            course_name,
+            course_description,
+            no_of_hours
+        ) values (
+            p_course_no,
+            p_course_name,
+            p_course_description,
+            p_no_of_hours
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_course_no                    in integer default null,
+        p_course_name                  in varchar2 default null,
+        p_course_description           in varchar2 default null,
+        p_no_of_hours                  in integer default null
+    )
+    is
+    begin
+        update  course_info set 
+            course_no = p_course_no,
+            course_name = p_course_name,
+            course_description = p_course_description,
+            no_of_hours = p_no_of_hours
+        where course_no = p_course_no;
+    end update_row;
+
+    procedure delete_row (
+        p_course_no                    in integer
+    )
+    is
+    begin
+        delete from course_info where course_no = p_course_no;
+    end delete_row;
+
+end course_info_api;
+/
+
+
+create or replace editionable package plan_info_api
+is
+ 
+    /* example:
+        declare
+            l_plan_no                       integer;
+            l_plan_year                     integer;
+            l_plan_hours                    integer;
+            l_department_code               integer;
+        begin
+        plan_info_api.get_row (
+            p_plan_seq                      => 1,
+            p_plan_no                       => l_plan_no,
+            p_plan_year                     => l_plan_year,
+            p_plan_hours                    => l_plan_hours,
+            p_department_code               => l_department_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_plan_seq                     in  integer,
+        p_plan_no                      out integer,
+        p_plan_year                    out integer,
+        p_plan_hours                   out integer,
+        p_department_code              out integer
+    );
+ 
+    /* example:
+        begin
+        plan_info_api.insert_row (
+            p_plan_seq                    => null,
+            p_plan_no                     => null,
+            p_plan_year                   => null,
+            p_plan_hours                  => null,
+            p_department_code             => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_plan_seq                     in integer default null,
+        p_plan_no                      in integer default null,
+        p_plan_year                    in integer default null,
+        p_plan_hours                   in integer default null,
+        p_department_code              in integer default null
+    );
+    procedure update_row  (
+        p_plan_seq                     in integer default null,
+        p_plan_no                      in integer default null,
+        p_plan_year                    in integer default null,
+        p_plan_hours                   in integer default null,
+        p_department_code              in integer default null
+    );
+    procedure delete_row (
+        p_plan_seq                     in integer
+    );
+end plan_info_api;
+/
+
+
+create or replace editionable package  body plan_info_api
+is
+ 
+    procedure get_row (
+        p_plan_seq                     in  integer,
+        p_plan_no                      out integer,
+        p_plan_year                    out integer,
+        p_plan_hours                   out integer,
+        p_department_code              out integer
+    )
+    is
+    begin
+        for c1 in (select * from plan_info where plan_seq = p_plan_seq) loop
+            p_plan_no := c1.plan_no;
+            p_plan_year := c1.plan_year;
+            p_plan_hours := c1.plan_hours;
+            p_department_code := c1.department_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_plan_seq                     in integer default null,
+        p_plan_no                      in integer default null,
+        p_plan_year                    in integer default null,
+        p_plan_hours                   in integer default null,
+        p_department_code              in integer default null
+    )
+    is
+    begin
+        insert into plan_info (
+            plan_seq,
+            plan_no,
+            plan_year,
+            plan_hours,
+            department_code
+        ) values (
+            p_plan_seq,
+            p_plan_no,
+            p_plan_year,
+            p_plan_hours,
+            p_department_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_plan_seq                     in integer default null,
+        p_plan_no                      in integer default null,
+        p_plan_year                    in integer default null,
+        p_plan_hours                   in integer default null,
+        p_department_code              in integer default null
+    )
+    is
+    begin
+        update  plan_info set 
+            plan_seq = p_plan_seq,
+            plan_no = p_plan_no,
+            plan_year = p_plan_year,
+            plan_hours = p_plan_hours,
+            department_code = p_department_code
+        where plan_seq = p_plan_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_plan_seq                     in integer
+    )
+    is
+    begin
+        delete from plan_info where plan_seq = p_plan_seq;
+    end delete_row;
+
+end plan_info_api;
+/
+
+
+create or replace editionable package plan_levels_info_api
+is
+ 
+    /* example:
+        declare
+            l_plan_level_no                 integer;
+            l_plan_level_hours_range        varchar2(8);
+            l_plan_code                     integer;
+        begin
+        plan_levels_info_api.get_row (
+            p_plan_level_seq                => 1,
+            p_plan_level_no                 => l_plan_level_no,
+            p_plan_level_hours_range        => l_plan_level_hours_range,
+            p_plan_code                     => l_plan_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_plan_level_seq               in  integer,
+        p_plan_level_no                out integer,
+        p_plan_level_hours_range       out varchar2,
+        p_plan_code                    out integer
+    );
+ 
+    /* example:
+        begin
+        plan_levels_info_api.insert_row (
+            p_plan_level_seq              => null,
+            p_plan_level_no               => null,
+            p_plan_level_hours_range      => null,
+            p_plan_code                   => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_plan_level_seq               in integer default null,
+        p_plan_level_no                in integer default null,
+        p_plan_level_hours_range       in varchar2 default null,
+        p_plan_code                    in integer default null
+    );
+    procedure update_row  (
+        p_plan_level_seq               in integer default null,
+        p_plan_level_no                in integer default null,
+        p_plan_level_hours_range       in varchar2 default null,
+        p_plan_code                    in integer default null
+    );
+    procedure delete_row (
+        p_plan_level_seq               in integer
+    );
+end plan_levels_info_api;
+/
+
+
+create or replace editionable package  body plan_levels_info_api
+is
+ 
+    procedure get_row (
+        p_plan_level_seq               in  integer,
+        p_plan_level_no                out integer,
+        p_plan_level_hours_range       out varchar2,
+        p_plan_code                    out integer
+    )
+    is
+    begin
+        for c1 in (select * from plan_levels_info where plan_level_seq = p_plan_level_seq) loop
+            p_plan_level_no := c1.plan_level_no;
+            p_plan_level_hours_range := c1.plan_level_hours_range;
+            p_plan_code := c1.plan_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_plan_level_seq               in integer default null,
+        p_plan_level_no                in integer default null,
+        p_plan_level_hours_range       in varchar2 default null,
+        p_plan_code                    in integer default null
+    )
+    is
+    begin
+        insert into plan_levels_info (
+            plan_level_seq,
+            plan_level_no,
+            plan_level_hours_range,
+            plan_code
+        ) values (
+            p_plan_level_seq,
+            p_plan_level_no,
+            p_plan_level_hours_range,
+            p_plan_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_plan_level_seq               in integer default null,
+        p_plan_level_no                in integer default null,
+        p_plan_level_hours_range       in varchar2 default null,
+        p_plan_code                    in integer default null
+    )
+    is
+    begin
+        update  plan_levels_info set 
+            plan_level_seq = p_plan_level_seq,
+            plan_level_no = p_plan_level_no,
+            plan_level_hours_range = p_plan_level_hours_range,
+            plan_code = p_plan_code
+        where plan_level_seq = p_plan_level_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_plan_level_seq               in integer
+    )
+    is
+    begin
+        delete from plan_levels_info where plan_level_seq = p_plan_level_seq;
+    end delete_row;
+
+end plan_levels_info_api;
+/
+
+
+create or replace editionable package level_courses_info_api
+is
+ 
+    /* example:
+        declare
+            l_course_code                   integer;
+            l_plan_level_code               integer;
+        begin
+        level_courses_info_api.get_row (
+            p_level_course_seq              => 1,
+            p_course_code                   => l_course_code,
+            p_plan_level_code               => l_plan_level_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_level_course_seq             in  integer,
+        p_course_code                  out integer,
+        p_plan_level_code              out integer
+    );
+ 
+    /* example:
+        begin
+        level_courses_info_api.insert_row (
+            p_level_course_seq            => null,
+            p_course_code                 => null,
+            p_plan_level_code             => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_level_course_seq             in integer default null,
+        p_course_code                  in integer default null,
+        p_plan_level_code              in integer default null
+    );
+    procedure update_row  (
+        p_level_course_seq             in integer default null,
+        p_course_code                  in integer default null,
+        p_plan_level_code              in integer default null
+    );
+    procedure delete_row (
+        p_level_course_seq             in integer
+    );
+end level_courses_info_api;
+/
+
+
+create or replace editionable package  body level_courses_info_api
+is
+ 
+    procedure get_row (
+        p_level_course_seq             in  integer,
+        p_course_code                  out integer,
+        p_plan_level_code              out integer
+    )
+    is
+    begin
+        for c1 in (select * from level_courses_info where level_course_seq = p_level_course_seq) loop
+            p_course_code := c1.course_code;
+            p_plan_level_code := c1.plan_level_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_level_course_seq             in integer default null,
+        p_course_code                  in integer default null,
+        p_plan_level_code              in integer default null
+    )
+    is
+    begin
+        insert into level_courses_info (
+            level_course_seq,
+            course_code,
+            plan_level_code
+        ) values (
+            p_level_course_seq,
+            p_course_code,
+            p_plan_level_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_level_course_seq             in integer default null,
+        p_course_code                  in integer default null,
+        p_plan_level_code              in integer default null
+    )
+    is
+    begin
+        update  level_courses_info set 
+            level_course_seq = p_level_course_seq,
+            course_code = p_course_code,
+            plan_level_code = p_plan_level_code
+        where level_course_seq = p_level_course_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_level_course_seq             in integer
+    )
+    is
+    begin
+        delete from level_courses_info where level_course_seq = p_level_course_seq;
+    end delete_row;
+
+end level_courses_info_api;
+/
+
+
+create or replace editionable package registered_courses_info_api
+is
+ 
+    /* example:
+        declare
+            l_midterm_grade                 integer;
+            l_final_grade                   integer;
+            l_student_semester_reg_code     integer;
+            l_course_code                   integer;
+        begin
+        registered_courses_info_api.get_row (
+            p_reg_courses_seq               => 1,
+            p_midterm_grade                 => l_midterm_grade,
+            p_final_grade                   => l_final_grade,
+            p_student_semester_reg_code     => l_student_semester_reg_code,
+            p_course_code                   => l_course_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_reg_courses_seq              in  integer,
+        p_midterm_grade                out integer,
+        p_final_grade                  out integer,
+        p_student_semester_reg_code    out integer,
+        p_course_code                  out integer
+    );
+ 
+    /* example:
+        begin
+        registered_courses_info_api.insert_row (
+            p_reg_courses_seq             => null,
+            p_midterm_grade               => null,
+            p_final_grade                 => null,
+            p_student_semester_reg_code   => null,
+            p_course_code                 => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_reg_courses_seq              in integer default null,
+        p_midterm_grade                in integer default null,
+        p_final_grade                  in integer default null,
+        p_student_semester_reg_code    in integer default null,
+        p_course_code                  in integer default null
+    );
+    procedure update_row  (
+        p_reg_courses_seq              in integer default null,
+        p_midterm_grade                in integer default null,
+        p_final_grade                  in integer default null,
+        p_student_semester_reg_code    in integer default null,
+        p_course_code                  in integer default null
+    );
+    procedure delete_row (
+        p_reg_courses_seq              in integer
+    );
+end registered_courses_info_api;
+/
+
+
+create or replace editionable package  body registered_courses_info_api
+is
+ 
+    procedure get_row (
+        p_reg_courses_seq              in  integer,
+        p_midterm_grade                out integer,
+        p_final_grade                  out integer,
+        p_student_semester_reg_code    out integer,
+        p_course_code                  out integer
+    )
+    is
+    begin
+        for c1 in (select * from registered_courses_info where reg_courses_seq = p_reg_courses_seq) loop
+            p_midterm_grade := c1.midterm_grade;
+            p_final_grade := c1.final_grade;
+            p_student_semester_reg_code := c1.student_semester_reg_code;
+            p_course_code := c1.course_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_reg_courses_seq              in integer default null,
+        p_midterm_grade                in integer default null,
+        p_final_grade                  in integer default null,
+        p_student_semester_reg_code    in integer default null,
+        p_course_code                  in integer default null
+    )
+    is
+    begin
+        insert into registered_courses_info (
+            reg_courses_seq,
+            midterm_grade,
+            final_grade,
+            student_semester_reg_code,
+            course_code
+        ) values (
+            p_reg_courses_seq,
+            p_midterm_grade,
+            p_final_grade,
+            p_student_semester_reg_code,
+            p_course_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_reg_courses_seq              in integer default null,
+        p_midterm_grade                in integer default null,
+        p_final_grade                  in integer default null,
+        p_student_semester_reg_code    in integer default null,
+        p_course_code                  in integer default null
+    )
+    is
+    begin
+        update  registered_courses_info set 
+            reg_courses_seq = p_reg_courses_seq,
+            midterm_grade = p_midterm_grade,
+            final_grade = p_final_grade,
+            student_semester_reg_code = p_student_semester_reg_code,
+            course_code = p_course_code
+        where reg_courses_seq = p_reg_courses_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_reg_courses_seq              in integer
+    )
+    is
+    begin
+        delete from registered_courses_info where reg_courses_seq = p_reg_courses_seq;
+    end delete_row;
+
+end registered_courses_info_api;
+/
+
+
+create or replace editionable package semester_courses_info_api
+is
+ 
+    /* example:
+        declare
+            l_semester_code                 integer;
+            l_course_code                   integer;
+        begin
+        semester_courses_info_api.get_row (
+            p_semester_courses_seq          => 1,
+            p_semester_code                 => l_semester_code,
+            p_course_code                   => l_course_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_semester_courses_seq         in  integer,
+        p_semester_code                out integer,
+        p_course_code                  out integer
+    );
+ 
+    /* example:
+        begin
+        semester_courses_info_api.insert_row (
+            p_semester_courses_seq        => null,
+            p_semester_code               => null,
+            p_course_code                 => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_semester_courses_seq         in integer default null,
+        p_semester_code                in integer default null,
+        p_course_code                  in integer default null
+    );
+    procedure update_row  (
+        p_semester_courses_seq         in integer default null,
+        p_semester_code                in integer default null,
+        p_course_code                  in integer default null
+    );
+    procedure delete_row (
+        p_semester_courses_seq         in integer
+    );
+end semester_courses_info_api;
+/
+
+
+create or replace editionable package  body semester_courses_info_api
+is
+ 
+    procedure get_row (
+        p_semester_courses_seq         in  integer,
+        p_semester_code                out integer,
+        p_course_code                  out integer
+    )
+    is
+    begin
+        for c1 in (select * from semester_courses_info where semester_courses_seq = p_semester_courses_seq) loop
+            p_semester_code := c1.semester_code;
+            p_course_code := c1.course_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_semester_courses_seq         in integer default null,
+        p_semester_code                in integer default null,
+        p_course_code                  in integer default null
+    )
+    is
+    begin
+        insert into semester_courses_info (
+            semester_courses_seq,
+            semester_code,
+            course_code
+        ) values (
+            p_semester_courses_seq,
+            p_semester_code,
+            p_course_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_semester_courses_seq         in integer default null,
+        p_semester_code                in integer default null,
+        p_course_code                  in integer default null
+    )
+    is
+    begin
+        update  semester_courses_info set 
+            semester_courses_seq = p_semester_courses_seq,
+            semester_code = p_semester_code,
+            course_code = p_course_code
+        where semester_courses_seq = p_semester_courses_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_semester_courses_seq         in integer
+    )
+    is
+    begin
+        delete from semester_courses_info where semester_courses_seq = p_semester_courses_seq;
+    end delete_row;
+
+end semester_courses_info_api;
+/
+
+
+create or replace editionable package teacher_section_info_api
+is
+ 
+    /* example:
+        declare
+            l_section_no                    integer;
+            l_employee_code                 integer;
+            l_semester_courses_code         integer;
+        begin
+        teacher_section_info_api.get_row (
+            p_teacher_section_seq           => 1,
+            p_section_no                    => l_section_no,
+            p_employee_code                 => l_employee_code,
+            p_semester_courses_code         => l_semester_courses_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_teacher_section_seq          in  integer,
+        p_section_no                   out integer,
+        p_employee_code                out integer,
+        p_semester_courses_code        out integer
+    );
+ 
+    /* example:
+        begin
+        teacher_section_info_api.insert_row (
+            p_teacher_section_seq         => null,
+            p_section_no                  => null,
+            p_employee_code               => null,
+            p_semester_courses_code       => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_teacher_section_seq          in integer default null,
+        p_section_no                   in integer default null,
+        p_employee_code                in integer default null,
+        p_semester_courses_code        in integer default null
+    );
+    procedure update_row  (
+        p_teacher_section_seq          in integer default null,
+        p_section_no                   in integer default null,
+        p_employee_code                in integer default null,
+        p_semester_courses_code        in integer default null
+    );
+    procedure delete_row (
+        p_teacher_section_seq          in integer
+    );
+end teacher_section_info_api;
+/
+
+
+create or replace editionable package  body teacher_section_info_api
+is
+ 
+    procedure get_row (
+        p_teacher_section_seq          in  integer,
+        p_section_no                   out integer,
+        p_employee_code                out integer,
+        p_semester_courses_code        out integer
+    )
+    is
+    begin
+        for c1 in (select * from teacher_section_info where teacher_section_seq = p_teacher_section_seq) loop
+            p_section_no := c1.section_no;
+            p_employee_code := c1.employee_code;
+            p_semester_courses_code := c1.semester_courses_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_teacher_section_seq          in integer default null,
+        p_section_no                   in integer default null,
+        p_employee_code                in integer default null,
+        p_semester_courses_code        in integer default null
+    )
+    is
+    begin
+        insert into teacher_section_info (
+            teacher_section_seq,
+            section_no,
+            employee_code,
+            semester_courses_code
+        ) values (
+            p_teacher_section_seq,
+            p_section_no,
+            p_employee_code,
+            p_semester_courses_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_teacher_section_seq          in integer default null,
+        p_section_no                   in integer default null,
+        p_employee_code                in integer default null,
+        p_semester_courses_code        in integer default null
+    )
+    is
+    begin
+        update  teacher_section_info set 
+            teacher_section_seq = p_teacher_section_seq,
+            section_no = p_section_no,
+            employee_code = p_employee_code,
+            semester_courses_code = p_semester_courses_code
+        where teacher_section_seq = p_teacher_section_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_teacher_section_seq          in integer
+    )
+    is
+    begin
+        delete from teacher_section_info where teacher_section_seq = p_teacher_section_seq;
+    end delete_row;
+
+end teacher_section_info_api;
+/
+
+
+create or replace editionable package appointments_info_api
+is
+ 
+    /* example:
+        declare
+            l_lecture_time_from             varchar2(8);
+            l_lecture_time_to               varchar2(8);
+            l_dayss                         varchar2(128);
+            l_room_code                     integer;
+            l_teacher_section_code          integer;
+        begin
+        appointments_info_api.get_row (
+            p_appointment_seq               => 1,
+            p_lecture_time_from             => l_lecture_time_from,
+            p_lecture_time_to               => l_lecture_time_to,
+            p_dayss                         => l_dayss,
+            p_room_code                     => l_room_code,
+            p_teacher_section_code          => l_teacher_section_code
+            );
+        end;
+    */
+
+    procedure get_row (
+        p_appointment_seq              in  integer,
+        p_lecture_time_from            out varchar2,
+        p_lecture_time_to              out varchar2,
+        p_dayss                        out varchar2,
+        p_room_code                    out integer,
+        p_teacher_section_code         out integer
+    );
+ 
+    /* example:
+        begin
+        appointments_info_api.insert_row (
+            p_appointment_seq             => null,
+            p_lecture_time_from           => null,
+            p_lecture_time_to             => null,
+            p_dayss                       => null,
+            p_room_code                   => null,
+            p_teacher_section_code        => null
+            );
+        end;
+    */
+
+    procedure insert_row  (
+        p_appointment_seq              in integer default null,
+        p_lecture_time_from            in varchar2 default null,
+        p_lecture_time_to              in varchar2 default null,
+        p_dayss                        in varchar2 default null,
+        p_room_code                    in integer default null,
+        p_teacher_section_code         in integer default null
+    );
+    procedure update_row  (
+        p_appointment_seq              in integer default null,
+        p_lecture_time_from            in varchar2 default null,
+        p_lecture_time_to              in varchar2 default null,
+        p_dayss                        in varchar2 default null,
+        p_room_code                    in integer default null,
+        p_teacher_section_code         in integer default null
+    );
+    procedure delete_row (
+        p_appointment_seq              in integer
+    );
+end appointments_info_api;
+/
+
+
+create or replace editionable package  body appointments_info_api
+is
+ 
+    procedure get_row (
+        p_appointment_seq              in  integer,
+        p_lecture_time_from            out varchar2,
+        p_lecture_time_to              out varchar2,
+        p_dayss                        out varchar2,
+        p_room_code                    out integer,
+        p_teacher_section_code         out integer
+    )
+    is
+    begin
+        for c1 in (select * from appointments_info where appointment_seq = p_appointment_seq) loop
+            p_lecture_time_from := c1.lecture_time_from;
+            p_lecture_time_to := c1.lecture_time_to;
+            p_dayss := c1.dayss;
+            p_room_code := c1.room_code;
+            p_teacher_section_code := c1.teacher_section_code;
+        end loop;
+    end get_row;
+
+ 
+    procedure insert_row  (
+        p_appointment_seq              in integer default null,
+        p_lecture_time_from            in varchar2 default null,
+        p_lecture_time_to              in varchar2 default null,
+        p_dayss                        in varchar2 default null,
+        p_room_code                    in integer default null,
+        p_teacher_section_code         in integer default null
+    )
+    is
+    begin
+        insert into appointments_info (
+            appointment_seq,
+            lecture_time_from,
+            lecture_time_to,
+            dayss,
+            room_code,
+            teacher_section_code
+        ) values (
+            p_appointment_seq,
+            p_lecture_time_from,
+            p_lecture_time_to,
+            p_dayss,
+            p_room_code,
+            p_teacher_section_code
+        );
+    end insert_row;
+
+    procedure update_row  (
+        p_appointment_seq              in integer default null,
+        p_lecture_time_from            in varchar2 default null,
+        p_lecture_time_to              in varchar2 default null,
+        p_dayss                        in varchar2 default null,
+        p_room_code                    in integer default null,
+        p_teacher_section_code         in integer default null
+    )
+    is
+    begin
+        update  appointments_info set 
+            appointment_seq = p_appointment_seq,
+            lecture_time_from = p_lecture_time_from,
+            lecture_time_to = p_lecture_time_to,
+            dayss = p_dayss,
+            room_code = p_room_code,
+            teacher_section_code = p_teacher_section_code
+        where appointment_seq = p_appointment_seq;
+    end update_row;
+
+    procedure delete_row (
+        p_appointment_seq              in integer
+    )
+    is
+    begin
+        delete from appointments_info where appointment_seq = p_appointment_seq;
+    end delete_row;
+
+end appointments_info_api;
+/
+
+
+
+-- load data
+ 
+-- Generated by Quick SQL Tuesday August 02, 2022  06:44:09
+ 
+/*
+Building_info
+    building_char vc(1) /pk
+    building_name vc(64) /unique
+
+Room_info
+    room_seq int /pk
+    room_no int
+    building_code vc(1) /fk Building_info
+
+Job_info
+    job_id int /pk
+    job_title vc(64) /unique
+    max_salary num
+    min_salary num
+
+Faculty_info
+    faculty_no int /pk
+    faculty_name vc(64) /unique
+    credit_hour_price int
+
+Department_info
+    department_no int /pk
+    department_name vc(64) /unique
+    faculty_code /fk Faculty_info
+
+Employee_info
+    employee_id int /pk
+    first_name vc(32) /nn
+    middle_name vc(32) /nn
+    last_name vc(32) /nn
+    arddress vc(64) /nn
+    phone_no int /nn
+    email vc(64) /unique
+    salary num
+    ssn num /unique
+    gender vc(1)
+    birth_date date
+    job_code /fk Job_info
+    department_code /fk Department_info
+    room_code /fk Room_info
+
+City
+    city_no int /pk
+    city_name vc(64)
+
+Sitting_Number
+    high_school_sitting_no int /pk
+    ssn int /unique
+    GPA num
+    major vc(2)
+
+Student_info
+    student_id int /pk
+    first_name vc(32) /nn
+    middle_name vc(32) /nn
+    last_name vc(32) /nn
+    degree_program vc(3)
+    arddress vc(64) /nn
+    phone_number int /nn
+    email vc(64) /unique
+    gender vc(1)
+    birth_date date
+    city_code /fk City
+    sitting_number_code /fk Sitting_Number
+
+Desires
+    desire_seq int /pk
+    desire_no int
+    faculty_code /fk Faculty_info
+    student_code /fk Student_info
+
+Semester_info
+    semester_seq int /pk
+    semester_no int
+    semester_start_date date
+    semester_end_date date
+    paid_quit_start_date date
+    paid_quit_end_date date
+    unpaid_quit_start_date date
+    unpaid_quit_end_date date
+
+Payments_info
+    payments_info_pk int /pk
+    payments_name vc(64) /nn
+    default_value int
+    payments_type vc(1)
+    payments_move vc(1)
+
+Payments_details
+    payments_serial_no int /pk
+    credit_amount num
+    debit_amount num
+    payment_date date
+    student_code /fk Student_info
+    semester_code /fk Semester_info
+    payments_code /fk Payments_info
+
+Student_Semester_Registeration
+    student_semester_reg_seq int /pk
+    GPA num /nn
+    CGPA num /nn
+    status vc(1) /nn
+    student_code /fk Student_info
+    semester_code /fk Semester_info
+
+Course_info
+    course_no int /pk
+    course_name vc(64) /unique
+    course_description vc(256)
+    no_of_hours int
+
+Plan_info
+    plan_seq int /pk
+    plan_no int /unique
+    plan_year int
+    plan_hours int
+    department_code /fk Department_info
+
+Plan_Levels_info
+    plan_level_seq int /pk
+    plan_level_no int
+    plan_level_hours_range vc(8)
+    plan_code /fk Plan_info
+
+Level_Courses_info
+    level_course_seq int /pk
+    course_code /fk Course_info
+    plan_level_code /fk Plan_Levels_info
+
+Registered_Courses_info
+    reg_courses_seq int /pk
+    midterm_grade int
+    final_grade int
+    student_semester_reg_code /fk Student_Semester_Registeration
+    course_code /fk Course_info
+
+Semester_Courses_info
+    semester_courses_seq int /pk
+    semester_code /fk Semester_info
+    course_code /fk Course_info
+
+Teacher_Section_info
+    teacher_section_seq int /pk
+    section_no int
+    employee_code /fk Employee_info
+    semester_courses_code /fk Semester_Courses_info
+
+Appointments_info
+    appointment_seq int /pk
+    lecture_time_from vc(8)
+    lecture_time_to vc(8)
+    dayss vc(128)
+    room_code /fk Room_info
+    teacher_section_code /fk Teacher_Section_info
+
+# settings = { PK: "SEQ", semantics: "CHAR", API: true, drop: true, editionable: true, language: "EN", APEX: true }
+*/
